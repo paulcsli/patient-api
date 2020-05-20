@@ -5,3 +5,15 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+require 'date'
+
+# for i in 1..100 do:
+attributes = {
+  email: 'random@gmail.com',
+  first_name: 'Paul',
+  last_name: 'Li',
+  birthdate: Date.new(1996,3,29),
+  sex: 'male',
+}
+patient = Patient.create!(attributes)
