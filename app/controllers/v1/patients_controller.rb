@@ -41,7 +41,6 @@ class V1::PatientsController < ApplicationController
     @patient = Patient.find(show_params[:id])
     render json: @patient, :status => :ok
   rescue ActiveRecord::RecordNotFound => e
-    byebug
     error = HttpErrorCreator.new(
       request_id: request.uuid,
       error_type: ActiveRecord::RecordNotFound,

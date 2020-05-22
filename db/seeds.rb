@@ -13,7 +13,7 @@ attributes = {
   email: 'random@gmail.com',
   first_name: 'Paul',
   last_name: 'Li',
-  birthdate: Date.new(1996,3,29),
-  sex: 'male',
+  birthdate: DateTime.new(1996,3,29),
+  sex: 'M',
 }
 patient = Patient.create!(attributes)
