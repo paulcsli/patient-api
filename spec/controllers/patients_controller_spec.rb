@@ -39,6 +39,12 @@ RSpec.describe V1::PatientsController, :type => :controller do
       expect(response).to have_http_status(:ok)
       expect(result[:id]).to eq(patient.id) 
     end
+
+    it "try to get a patient with an invalid ID" do     
+      get :show, :params => { :id => 2 }
+      expect(response).to have_http_status(:not_found)
+      # expect(response.body).to eq("Couldn't find Patient with 'id'=2")
+    end
   end
 
   describe "POST create" do
@@ -56,6 +62,28 @@ RSpec.describe V1::PatientsController, :type => :controller do
 
       expect(response).to have_http_status(:created)
       expect(result[:email]).to eq(attrs[:email]) 
+    end
+  end
+
+  describe "Error handling" do
+    let(:attrs) {
+      { :email=>"ran@gmail.com",
+        :first_name=>"paul",
+        :last_name=>"li",
+        :birthdate=>"20110329",
+        :sex=>"male",
+      }
+    }
+
+    it "try to create a patient with existing email" do
+      patient = Patient.create!(attrs)
+      post :create, :params => { :data => attrs }, as: :json
+      expect(response).to have_http_status(:conflict)
+    end
+
+    it "try to create a patient with missing attributes" do
+      post :create, :params => { :data => {} }, as: :json
+      expect(response).to have_http_status(:bad_request)
     end
   end
 end

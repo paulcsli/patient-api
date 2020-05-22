@@ -38,9 +38,14 @@ class V1::PatientsController < ApplicationController
         schema:
           $ref: '#/definitions/http-error'`
   def show
-    # TODO: error handling
     @patient = Patient.find(show_params[:id])
     render json: @patient, :status => :ok
+  rescue ActiveRecord::RecordNotFound => e
+    error = HttpErrorCreator.new(
+      error_type: ActiveRecord::RecordNotFound,
+      errors: e.to_s,
+    )
+    render json: error.generate_response, status: error.status_code
   end
 
   `post:
@@ -89,8 +94,17 @@ class V1::PatientsController < ApplicationController
   def create
     # TODO: error handling
     attributes = JSON.parse(request.body.read).symbolize_keys[:data]
-    @new_patient = Patient.create!(attributes)
-    render json: @new_patient, :status => :created
+    @new_patient = Patient.create(attributes)
+
+    if @new_patient.valid?
+      render json: @new_patient, :status => :created
+    else
+      error = HttpErrorCreator.new(
+        error_type: ActiveRecord::RecordInvalid,
+        errors: @new_patient.errors,
+      )
+      render json: error.generate_response, status: error.status_code
+    end
   end
 
   private
