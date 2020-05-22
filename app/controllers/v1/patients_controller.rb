@@ -41,9 +41,12 @@ class V1::PatientsController < ApplicationController
     @patient = Patient.find(show_params[:id])
     render json: @patient, :status => :ok
   rescue ActiveRecord::RecordNotFound => e
+    byebug
     error = HttpErrorCreator.new(
+      request_id: request.uuid,
       error_type: ActiveRecord::RecordNotFound,
-      errors: e.to_s,
+      error_msg: e.to_s,
+      patient: @patient,
     )
     render json: error.generate_response, status: error.status_code
   end
@@ -92,7 +95,6 @@ class V1::PatientsController < ApplicationController
               sex:
                 type: string`
   def create
-    # TODO: error handling
     attributes = JSON.parse(request.body.read).symbolize_keys[:data]
     @new_patient = Patient.create(attributes)
 
@@ -100,8 +102,9 @@ class V1::PatientsController < ApplicationController
       render json: @new_patient, :status => :created
     else
       error = HttpErrorCreator.new(
+        request_id: request.uuid,
         error_type: ActiveRecord::RecordInvalid,
-        errors: @new_patient.errors,
+        patient: @new_patient,
       )
       render json: error.generate_response, status: error.status_code
     end
