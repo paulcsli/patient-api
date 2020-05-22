@@ -52,5 +52,5 @@ Rails.application.configure do
 
   # render debugging information preserving the response format, use the value :api
   # render an HTML page with debugging information, use the value :default
-  config.debug_exception_response_format = :default
+  config.debug_exception_response_format = :api
 end
