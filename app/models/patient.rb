@@ -12,6 +12,10 @@ class Patient < ApplicationRecord
     :in => %w(M F),
     :message => "must be either M or F" }
 
+  scope :get_one_page, ->(page_size, page_index) {
+    limit(page_size).offset(page_index * page_size)
+  }
+
   def birthdate_is_valid_datetime
     errors.add(:birthdate, 'must be a valid datetime') if birthdate.nil?
   end

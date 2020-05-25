@@ -1,16 +1,11 @@
 class V1::PatientsController < ApplicationController
-  PAGINATION_SIZE = 10
   before_action :get_page_index, only: [:index]
 
   def index
-    render json: {
-      data: Patient.limit(10).offset(@page_index * PAGINATION_SIZE).to_a.map { |p| p.generate_patient_response(request.base_url)},
-      links: PaginationLinkCreator.new(
-        request.base_url,
-        @page_index,
-        PAGINATION_SIZE
-      ).generate_link,
-    }, :status => :ok
+    render json: PaginationCreator.new(
+      request.base_url,
+      @page_index,
+    ).generate_pagination, :status => :ok
   end
 
   def show
@@ -32,7 +27,8 @@ class V1::PatientsController < ApplicationController
     @new_patient = Patient.create(attributes)
 
     if @new_patient.valid?
-      render json: @new_patient.generate_patient_response(request.base_url), :status => :created
+      render json: @new_patient.generate_patient_response(request.base_url),
+      :status => :created
     else
       error = HttpErrorCreator.new(
         request_id: request.uuid,

@@ -56,7 +56,7 @@ RSpec.describe V1::PatientsController, :type => :controller do
       end
 
       # TODO: figure out how to clean up db after each example
-      after(:context) do
+      after(:all) do
         Patient.delete_all
       end
 
@@ -66,8 +66,8 @@ RSpec.describe V1::PatientsController, :type => :controller do
 
         expect(response).to have_http_status(:ok)
 
-        expected_ids = body["data"].map { |p| p["id"] }
-        expect(expected_ids).to eql((1..10).to_a)
+        expected_ids = body["data"].map { |p| p["attributes"]["id"] }
+        expect(expected_ids).to eql((1..10).to_a.map(&:to_s))
         expect(body["links"]).to eql({
           "self" => "#{request.base_url}/v1/patients?page_number=1",
           "next" => "#{request.base_url}/v1/patients?page_number=2",
@@ -80,8 +80,8 @@ RSpec.describe V1::PatientsController, :type => :controller do
 
         expect(response).to have_http_status(:ok)
 
-        expected_ids = body["data"].map { |p| p["id"] }
-        expect(expected_ids).to eql((21..25).to_a)
+        expected_ids = body["data"].map { |p| p["attributes"]["id"] }
+        expect(expected_ids).to eql((21..25).to_a.map(&:to_s))
         expect(body["links"]).to eql({
           "self" => "#{request.base_url}/v1/patients?page_number=3",
           "next" => nil,
@@ -98,7 +98,7 @@ RSpec.describe V1::PatientsController, :type => :controller do
       result = JSON.parse(response.body)
 
       expect(response).to have_http_status(:ok)
-      expect(result["id"]).to eq(patient.id) 
+      expect(result["attributes"]["id"]).to eq(patient.id.to_s) 
     end
 
     it "try to get a patient with an invalid ID" do     
@@ -111,10 +111,10 @@ RSpec.describe V1::PatientsController, :type => :controller do
     it "create a patient" do
       post :create, :params => { :data => attrs }, as: :json
       
-      result = JSON.parse(response.body).symbolize_keys
+      result = JSON.parse(response.body)
 
       expect(response).to have_http_status(:created)
-      expect(result[:email]).to eq(attrs[:email]) 
+      expect(result["attributes"]["email"]).to eq(attrs[:email]) 
     end
     
     it "try to create a patient with existing email" do
