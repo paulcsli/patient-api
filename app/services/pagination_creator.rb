@@ -12,26 +12,26 @@ class PaginationCreator
         Patient.get_one_page(PAGINATION_SIZE, @page_index)
           .to_a
           .map { |p| p.generate_patient_response(@base_url) },
-      links: generate_link()
+      links: generate_links()
     }
   end
 
-  def generate_link
+  def generate_links
     {
-      self: current_link(),
+      self: format_link(which_page: :current),
       next: next_link(),
     }
   end
 
-  def current_link
-    "#{@base_url}/v1/patients?page_number=#{@page_index+1}"
-  end
-
   def next_link
     if Patient.count > (@page_index+1) * PAGINATION_SIZE
-      "#{@base_url}/v1/patients?page_number=#{@page_index+2}"
+      format_link(which_page: :next)
     else
       nil
     end
+  end
+
+  def format_link(which_page:)
+    "#{@base_url}/v1/patients?page_number=#{@page_index + (which_page == :current ? 1 : 2)}"
   end
 end
