@@ -8,5 +8,7 @@ The app runs in Rails 6
 bundle install
 
 rails db:setup
+rake db:migrate
+rake db:seed
 
 rails server
