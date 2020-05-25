@@ -7,13 +7,29 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 require 'date'
+require 'securerandom'
 
-# for i in 1..100 do:
-attributes = {
-  email: 'random@gmail.com',
-  first_name: 'Paul',
-  last_name: 'Li',
-  birthdate: DateTime.new(1996,3,29),
-  sex: 'M',
-}
-patient = Patient.create!(attributes)
+def random_email_generator
+  "#{SecureRandom.hex}@gmail.com"
+end
+
+def random_birthday_generator
+  year, month, day = rand(1900..2000), rand(1..12), rand(1..28)
+  DateTime.new(year, month, day)
+end
+
+def random_name_generator
+  ltrs = [('a'..'z'), ('A'..'Z')].map(&:to_a).flatten
+  string = (1...15).map { ltrs[rand(ltrs.length)] }.join
+end
+
+for i in 1..100 do
+  attributes = {
+    email: "#{random_email_generator()}",
+    first_name: "#{random_name_generator()}",
+    last_name: "#{random_name_generator()}",
+    birthdate: "#{random_birthday_generator()}",
+    sex: ["M", "F"].sample,
+  }
+  patient = Patient.create!(attributes)
+end

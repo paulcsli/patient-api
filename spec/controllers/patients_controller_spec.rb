@@ -12,16 +12,81 @@ RSpec.describe V1::PatientsController, :type => :controller do
   }
 
   describe "GET index" do
-    it "Get 10 patient profiles" do
-      patient = Patient.create!(attrs)     
-      get :index
+    context "with zero patients in DB" do
+      it "get for page 1" do
+        get :index
+        body = JSON.parse(response.body)
 
-      body = JSON.parse(response.body).symbolize_keys
-      first_patient = body[:data][0]
+        expect(response).to have_http_status(:ok)
+        expect(body).to eql({
+          "data" => [],
+          "links" => {
+            "self" => "#{request.base_url}/v1/patients?page_number=1",
+            "next" => nil,
+          },
+        })
+      end
 
-      expect(response).to have_http_status(:ok)
-      expect(body).to have_key(:data)
-      expect(first_patient['id']).to eq(patient.id) 
+      it "get for page 2" do
+        get :index, :params => { :page_number => 2 }
+        body = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(body).to eql({
+          "data" => [],
+          "links" => {
+            "self" => "#{request.base_url}/v1/patients?page_number=2",
+            "next" => nil,
+          },
+        })
+      end
+    end
+
+    context "25 patients in DB" do
+      before(:all) do
+        for i in 1..25 do
+          Patient.create!({
+            :email => "#{SecureRandom.hex}@gmail.com",
+            :first_name => "paul",
+            :last_name => "li",
+            :birthdate => "2011-03-29",
+            :sex => "M",
+          })
+        end
+      end
+
+      # TODO: figure out how to clean up db after each example
+      after(:context) do
+        Patient.delete_all
+      end
+
+      it "get the first 10 patients" do
+        get :index
+        body = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+
+        expected_ids = body["data"].map { |p| p["id"] }
+        expect(expected_ids).to eql((1..10).to_a)
+        expect(body["links"]).to eql({
+          "self" => "#{request.base_url}/v1/patients?page_number=1",
+          "next" => "#{request.base_url}/v1/patients?page_number=2",
+        })
+      end
+
+      it "get the last 5 patients" do
+        get :index, :params => { :page_number => 3 }
+        body = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+
+        expected_ids = body["data"].map { |p| p["id"] }
+        expect(expected_ids).to eql((21..25).to_a)
+        expect(body["links"]).to eql({
+          "self" => "#{request.base_url}/v1/patients?page_number=3",
+          "next" => nil,
+        })
+      end
     end
   end
 
@@ -30,10 +95,10 @@ RSpec.describe V1::PatientsController, :type => :controller do
       patient = Patient.create!(attrs)     
       get :show, :params => { :id => patient.id }
       
-      result = JSON.parse(response.body).symbolize_keys
+      result = JSON.parse(response.body)
 
       expect(response).to have_http_status(:ok)
-      expect(result[:id]).to eq(patient.id) 
+      expect(result["id"]).to eq(patient.id) 
     end
 
     it "try to get a patient with an invalid ID" do     
@@ -60,6 +125,11 @@ RSpec.describe V1::PatientsController, :type => :controller do
     
     it "try to create a patient with missing attributes" do
       post :create, :params => { :data => {} }, as: :json
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "try to create a patient with missing params" do
+      post :create
       expect(response).to have_http_status(:bad_request)
     end
   end

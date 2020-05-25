@@ -1,5 +1,8 @@
 class V1::PatientsController < ApplicationController
-  `get:
+  PAGINATION_SIZE = 10
+  before_action :get_page_index, only: [:index]
+  
+  `get
     summary: Get paginated patient profiles
     responses:
       200:
@@ -18,8 +21,14 @@ class V1::PatientsController < ApplicationController
             links:
               $ref: '#/definitions/pagination'`
   def index
-    # TODO: pagination
-    render json: {data: Patient.all.to_a}, :status => :ok
+    render json: {
+      data: Patient.limit(10).offset(@page_index * PAGINATION_SIZE).to_a,
+      links: PaginationLinkCreator.new(
+        request.base_url,
+        @page_index,
+        PAGINATION_SIZE
+      ).generate_link,
+    }, :status => :ok
   end
 
   `parameters:
@@ -94,7 +103,8 @@ class V1::PatientsController < ApplicationController
               sex:
                 type: string`
   def create
-    attributes = JSON.parse(request.body.read).symbolize_keys[:data]
+    request_body = request.body.read
+    attributes = request_body.empty? ? {} : JSON.parse(request_body)["data"]
     @new_patient = Patient.create(attributes)
 
     if @new_patient.valid?
@@ -113,5 +123,10 @@ class V1::PatientsController < ApplicationController
   def show_params
     permitted = params.permit(:id).to_hash.symbolize_keys
     permitted
+  end
+
+  def get_page_index
+    params.permit(:page_number)
+    @page_index = params.has_key?(:page_number) ? params[:page_number].to_i - 1 : 0
   end
 end
