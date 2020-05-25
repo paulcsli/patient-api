@@ -1,18 +1,4 @@
 class PaginationLinkCreator
-  `pagination:
-  type: object
-  required:
-    - self
-    - next
-  properties:
-    self:
-      type: string
-      format: url
-      description: Canonical URL of the current page
-    next:
-      type: string
-      format: url
-      description: URL of next page`
   def initialize(base_url, page_index, page_size)
     @base_url = base_url
     @page_index = page_index

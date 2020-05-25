@@ -4,7 +4,7 @@ class V1::PatientsController < ApplicationController
 
   def index
     render json: {
-      data: Patient.limit(10).offset(@page_index * PAGINATION_SIZE).to_a.map { |p| p.generate_patient_response('test')},
+      data: Patient.limit(10).offset(@page_index * PAGINATION_SIZE).to_a.map { |p| p.generate_patient_response(request.base_url)},
       links: PaginationLinkCreator.new(
         request.base_url,
         @page_index,

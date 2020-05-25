@@ -6,28 +6,7 @@ class HttpErrorCreator
     :bad_format => [400, "Bad Request"],
     :record_not_found => [404, "Not Found"]
   }
-  ` 
-  http-error:
-    type: object
-    properties:
-      error:
-        type: object
-        properties:
-          id:
-            type: string
-            description: Request unique identifier.
-          status:
-            type: string
-            description: HTTP status code.
-          title:
-            type: string
-            description: HTTP status.
-          detail:
-            type: string
-            description: Human readable detail.
-          code:
-            type: string
-            description: An error code unique to the error case.`
+
   def initialize(request_id: nil, error_type:, error_msg: nil, patient: nil)
     @request_id = request_id
     @error_type = error_type
