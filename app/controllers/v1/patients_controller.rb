@@ -1,4 +1,6 @@
 class V1::PatientsController < ApplicationController
+  CREATE_PERMITTABLES = Set[:email, :first_name, :last_name, :sex, :birthdate]
+
   before_action :get_page_index, only: [:index]
 
   def index
@@ -22,9 +24,7 @@ class V1::PatientsController < ApplicationController
   end
 
   def create
-    request_body = request.body.read
-    attributes = request_body.empty? ? {} : JSON.parse(request_body)["data"]
-    @new_patient = Patient.create(attributes)
+    @new_patient = Patient.create(create_params)
 
     if @new_patient.valid?
       render json: @new_patient.generate_patient_response(request.base_url),
@@ -41,8 +41,15 @@ class V1::PatientsController < ApplicationController
 
   private
   def show_params
-    permitted = params.permit(:id).to_hash.symbolize_keys
-    permitted
+    params.permit(:id).to_hash.symbolize_keys
+  end
+
+  def create_params
+    params.require(:data).each_key do |k|
+      params.permit(k) if CREATE_PERMITTABLES.include?(k)
+    end
+  rescue ActionController::ParameterMissing => e
+    {}
   end
 
   def get_page_index

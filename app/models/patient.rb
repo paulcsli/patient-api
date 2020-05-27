@@ -44,7 +44,7 @@ class Patient < ApplicationRecord
   end
 
   def generate_patient_link(base_url)
-    "#{base_url}/v1/patients/id=#{id}"
+    "#{base_url}/v1/patients/#{id}"
   end
 
   def generate_patient_response(base_url)
