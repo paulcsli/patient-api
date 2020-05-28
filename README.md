@@ -8,24 +8,25 @@ rake db:setup
 rails server
 
 # How to Use
-get	/v1/patients
-  summary: Get paginated patient profiles	
-  responses:	
-    200:
-      description: Get a page of 10 patient profiles with the link for next page.	
-      schema:	
-        required:	
-          - data	
-          - links	
-        properties:	
-          data:	
-            type: array	
-            items:	
-              $ref: '#/definitions/patient'	
-          links:	
-            $ref: '#/definitions/pagination'
+## get /v1/patients
 
-get	/v1/patients/{id}
+summary: Get paginated patient profiles  
+responses:</br>
+  * 200</br> 
+    description: Get a page of 10 patient profiles with the link for next page.</br>
+    schema:</br>
+    * required:</br>
+      * data</br>
+      * links</br>
+    * properties:</br> 	
+      * data:</br>
+        * type: array</br>
+        * items:</br>
+            $ref: '#/definitions/patient'</br>
+      * links:</br>
+          $ref: '#/definitions/pagination'</br>
+
+## get /v1/patients/{id}
   summary: Get a particular patient profile
   parameters:
     id:
@@ -42,7 +43,7 @@ get	/v1/patients/{id}
       schema:	
         $ref: '#/definitions/http-error'
 
-post /v1/patients	
+## post /v1/patients	
   summary: Create a patient profile	
   parameters:	
     data:
@@ -67,8 +68,8 @@ post /v1/patients
       schema:	
         $ref: '#/definitions/http-error'
 
-Definitions:
-  Pagination:
+## Definitions:
+ Pagination:
     required:
       - self
       - next
