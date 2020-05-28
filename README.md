@@ -9,8 +9,7 @@ rails server
 
 # How to Use
 ## get /v1/patients
-
-summary: Get paginated patient profiles  
+summary: Get paginated patient profiles</br>
 responses:</br>
   * 200</br> 
     description: Get a page of 10 patient profiles with the link for next page.</br>
@@ -27,82 +26,82 @@ responses:</br>
           $ref: '#/definitions/pagination'</br>
 
 ## get /v1/patients/{id}
-  summary: Get a particular patient profile
-  parameters:
-    id:
-      description: the patient id	
-      required: true	
-      type: integer	
-  responses:
-    200:	
-      description: patient profile	
-      schema:	
-        $ref: '#/definitions/patient'	
-    404:  	
-      description: not found	
-      schema:	
-        $ref: '#/definitions/http-error'
+summary: Get a particular patient profile</br>
+parameters:</br>
+  * id:</br>
+      description: the patient id</br>
+      required: true</br>
+      type: integer</br>
+responses:</br>
+  * 200:</br>
+      description: patient profile</br>
+      schema:</br>
+        $ref: '#/definitions/patient'</br>
+  * 404:</br>
+      description: not found</br>
+      schema:</br>
+        $ref: '#/definitions/http-error'</br>
 
 ## post /v1/patients	
-  summary: Create a patient profile	
-  parameters:	
-    data:
-      required: true
-      properties (all required):	
-        - email	(type: string)
-        - first_name (type: string)
-        - last_name (type: string)	
-        - birthdate	(type: string, format: date)
-        - sex	(type: string)
-  responses:
-    201:	
-      description: A patient profile.	
-      schema:	
-        $ref: '#/definitions/patient'	
-    400:	
-      description: Required field missing or bad format.	
-      schema:	
-        $ref: '#/definitions/http-error'	
-    409:	
-      description: Email duplicates	
-      schema:	
-        $ref: '#/definitions/http-error'
+summary: Create a patient profile</br>
+parameters:</br>
+  * data:</br>
+      required: true</br>
+      properties (all required):</br>
+        * email	(type: string)</br>
+        * first_name (type: string)</br>
+        * last_name (type: string)</br>
+        * birthdate	(type: string, format: date)</br>
+        * sex	(type: string)</br>
+responses:</br>
+  * 201:</br>
+      description: A patient profile.	</br>
+      schema:	</br>
+        $ref: '#/definitions/patient'	</br>
+  * 400:</br>
+      description: Required field missing or bad format.	</br>
+      schema:	</br>
+        $ref: '#/definitions/http-error'	</br>
+  * 409:</br>
+      description: Email duplicates	</br>
+      schema:	</br>
+        $ref: '#/definitions/http-error'</br>
 
 ## Definitions:
- Pagination:
-    required:
-      - self
-      - next
-    properties:
-      self:
-        type: string
-        description: Canonical URL of the current page
-      next:
-        type: string
-        description: URL of next page
-
-  http-error:
-    properties:
-      id:
-        type: string
-        description: Request unique identifier.
-      status:
-        type: string
-        description: HTTP status code.
-      title:
-        type: string
-        description: HTTP status.
-      detail:
-        type: string
-        description: Human readable detail.
-      code:
-        type: string
-        description: An error code unique to the error case.
-  
-  Patient:
-    properties: (all required)
-      - email	(type: string, unique: true)
-      - first_name (type: string)
-      - last_name (type: string)	
-      - birthdate	(type: string, format: date)
-      - sex	(type: string)
+Pagination:</br>
+  * required:</br>
+      - self</br>
+      - next</br>
+  * properties:</br>
+    * self:</br>
+        type: string</br>
+        description: Canonical URL of the current page</br>
+    * next:</br>
+        type: string</br>
+        description: URL of next page</br>
+</br>
+http-error:</br>
+  * properties:</br>
+    * id:</br>
+        type: string</br>
+        description: Request unique identifier.</br>
+    * status:</br>
+        type: string</br>
+        description: HTTP status code.</br>
+    * title:</br>
+        type: string</br>
+        description: HTTP status.</br>
+    * detail:</br>
+        type: string</br>
+        description: Human readable detail.</br>
+    * code:</br>
+        type: string</br>
+        description: An error code unique to the error case.</br>
+</br>
+Patient:</br>
+    * properties: (all required)</br>
+      * email	(type: string, unique: true)</br>
+      * first_name (type: string)</br>
+      * last_name (type: string)	</br>
+      * birthdate	(type: string, format: date)</br>
+      * sex	(type: string)</br>
